@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} About Me {% endblock title%}
+
+{% block content %} 
+    <h1>About Me</h1>
+    
+    <div class="about-container">
+        <div class="about-left">
+            <div class="photo-circle">
+                <img src="{% static 'img/me.jpeg' %}" alt="Jeuan Mitchell" class="profile-photo">
+            </div>
+        </div>
+        
+        <div class="about-right">
+            <div class="about-card">
+                <p>I am a seasoned Cyber Security Engineer with over 20 years of experience protecting enterprise systems and supporting risk-informed decision-making across Department of Defense environments. I currently serve in a DevSecOps-focused role with U.S. Transportation Command, where I provide comprehensive security risk assessments, ensure compliance with security frameworks, and support the secure development and operation of mission-critical applications. Throughout my career, I have built deep expertise in network security, firewalls, vulnerability management, and Risk Management Framework (RMF) processes, consistently helping organizations safeguard sensitive data while enabling operational success.</p>
+                
+                <p>My professional background spans leadership roles in the U.S. Army, the U.S. Air Force, and multiple cybersecurity organizations, where I have led teams, conducted incident response operations, managed cross-domain security initiatives, and delivered enterprise vulnerability assessments. I also bring a strong academic foundation, holding an MBA and multiple graduate degrees in cybersecurity and information systems security, along with industry certifications such as CompTIA Security+, Network+, Project+, and ITIL. In addition, my experience as an adjunct instructor highlights my commitment to mentoring and developing the next generation of IT and cybersecurity professionals.</p>
+                
+                <p>Beyond his professional achievements, Jeuan is a devoted husband and proud father of two sons. He values family, personal growth, and lifelong learning, which is reflected in both his career and hobbies. In his free time, he enjoys playing golf as a way to stay active and unwind, and he continues to expand his technical skill set by learning to code and building modern applications. This balance of leadership, technical expertise, and personal dedication defines Jeuan Mitchell as both a trusted cybersecurity professional and a driven lifelong learner.</p>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+   
