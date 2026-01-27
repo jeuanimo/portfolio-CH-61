@@ -1,87 +1,193 @@
+{# Load Django static files template tag #}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+    {# Character encoding for proper text display #}
     <meta charset="UTF-8">
+    {# Responsive viewport settings for mobile devices #}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {# Dynamic page title block - overridden by child templates #}
     <title>{% block title %} {% endblock %}</title>
+    {# Font Awesome icons CDN for social and UI icons #}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    {# Main stylesheet with beveled Mitchell Library styling #}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
 <body>
-    <!--    Top Bar with Logo and Social Media-->
+    {# Top Bar with Logo and Social Media #}
     <div class="top-bar">
         <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="brand-wrapper">
-                        <a class="navbar-brand" href="{% url 'about_me' %}">
-                            Jeuan M. Mitchell <span>Portfolio</span>
+            {# Flex row containing brand and action buttons #}
+            <div class="brand-row">
+                {# Brand/logo section with name and subtitle #}
+                <div class="brand-wrapper">
+                    {# Link to home page (about me) #}
+                    <a class="navbar-brand" href="{% url 'about_me' %}">
+                        {# Main name display - bold and prominent #}
+                        <span class="brand-name">Jeuan M. Mitchell</span>
+                        {# Subtitle - "Portfolio" #}
+                        <span class="brand-subtitle">Portfolio</span>
+                    </a>
+                </div>
+                {# Right-side action buttons container #}
+                <div class="top-actions">
+                    {# User badge - shows logged-in user's username #}
+                    {% if user.is_authenticated %}
+                        <div class="user-badge">
+                            <i class="fa fa-user-circle"></i>
+                            <span class="username">{{ user.username }}</span>
+                        </div>
+                    {% endif %}
+                    {# Social media icon links #}
+                    <div class="social-media">
+                        {# LinkedIn profile link - opens in new tab #}
+                        <a href="https://www.linkedin.com/in/jeuanmitchell/" class="social-link" title="LinkedIn" target="_blank" rel="noopener">
+                            <i class="fa fa-linkedin"></i>
+                        </a>
+                        {# GitHub profile link - opens in new tab #}
+                        <a href="https://github.com/jeuanimo" class="social-link" title="GitHub" target="_blank" rel="noopener">
+                            <i class="fa fa-github"></i>
                         </a>
                     </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="social-media">
-                        <a href="#" class="social-link" title="Facebook"><i class="fa fa-facebook"></i></a>
-                        <a href="#" class="social-link" title="Twitter"><i class="fa fa-twitter"></i></a>
-                        <a href="#" class="social-link" title="LinkedIn"><i class="fa fa-linkedin"></i></a>
-                        <a href="#" class="social-link" title="GitHub"><i class="fa fa-github"></i></a>
-                    </div>
+                    {# Theme toggle button for light/dark mode #}
+                    <button id="themeToggle" class="theme-toggle-btn" type="button" onclick="toggleTheme()">
+                        {# Moon icon for light mode, changes to sun in dark mode #}
+                        <i id="themeIcon" class="fa fa-moon-o" aria-hidden="true"></i>
+                        {# Visible label text that updates with theme #}
+                        <span id="themeLabel" class="theme-label">Dark Mode</span>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!--    Main Navigation-->
+    {# Main Navigation Bar #}
     <nav class="navbar navbar-expand-lg" id="main-navbar">
         <div class="container-fluid">
+            {# Mobile menu toggle button - shown on small screens #}
             <button class="navbar-toggler" type="button" onclick="toggleMenu()">
                 <span class="fa fa-bars"></span> Menu
             </button>
+            {# Navigation links container - collapsible on mobile #}
             <div class="navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
+                    {# About Me nav link - active class added when on this page #}
                     <li class="nav-item {% if request.resolver_match.url_name == 'about_me' %}active{% endif %}">
                         <a href="{% url 'about_me' %}" class="nav-link">About Me</a>
                     </li>
+                    {# Experience nav link #}
                     <li class="nav-item {% if request.resolver_match.url_name == 'experience' %}active{% endif %}">
                         <a href="{% url 'experience' %}" class="nav-link">Experience</a>
                     </li>
+                    {# Skills nav link #}
                     <li class="nav-item {% if request.resolver_match.url_name == 'skills' %}active{% endif %}">
                         <a href="{% url 'skills' %}" class="nav-link">Skills</a>
                     </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">Projects</a>
+                    {# Projects nav link #}
+                    <li class="nav-item {% if request.resolver_match.url_name == 'projects_list' %}active{% endif %}">
+                        <a href="{% url 'projects_list' %}" class="nav-link">Projects</a>
                     </li>
+                    {# Contact nav link - placeholder #}
                     <li class="nav-item">
                         <a href="#" class="nav-link">Contact</a>
                     </li>
+                    {# Authentication links - conditionally shown based on user status #}
+                    {% if user.is_authenticated %}
+                        {# Logout link - shown when user is logged in #}
+                        <li class="nav-item">
+                            <a href="{% url 'logout' %}" class="nav-link auth-link">Logout</a>
+                        </li>
+                    {% else %}
+                        {# Login link - shown when user is not logged in #}
+                        <li class="nav-item">
+                            <a href="{% url 'login' %}" class="nav-link auth-link">Login</a>
+                        </li>
+                        {# Register link - shown when user is not logged in #}
+                        <li class="nav-item">
+                            <a href="{% url 'register' %}" class="nav-link auth-link">Register</a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!--    Main CONTENT Dynamic (Content from Child pages)-->
-        <main class="main-content">
-            <div class="container">
-        {% block content %} {% endblock %} 
-        
-
-            </div>
-        </main>
-    <!--    Footer  -->
+    {# Main Content Area - Dynamic content from child templates #}
+    <main class="main-content">
+        <div class="container">
+            {# Content block - replaced by child templates #}
+            {% block content %} {% endblock %} 
+        </div>
+    </main>
+    
+    {# Footer Section #}
     <footer class="footer">
         <div class="container">
+            {# Copyright notice #}
             <p>&copy; 2026 Jeuan M.Mitchell Portfolio Site. All rights reserved.</p>
         </div>
     </footer>
 
     <script>
+        // Mobile menu toggle function
         function toggleMenu() {
+            // Get the navbar element
             const navbar = document.getElementById('navbarNav');
+            // Toggle visibility class
             navbar.classList.toggle('show');
         }
+
+        // Theme management variables
+        const bodyEl = document.body;  // Body element for dark-mode class
+        const themeToggleBtn = document.getElementById('themeToggle');  // Toggle button
+        const themeIcon = document.getElementById('themeIcon');  // Icon element
+        const themeLabel = document.getElementById('themeLabel');  // Label text element
+
+        // Set theme to light or dark mode
+        function setTheme(mode) {
+            if (mode === 'dark') {
+                // Add dark-mode class to body
+                bodyEl.classList.add('dark-mode');
+                // Change icon from moon to sun
+                themeIcon.classList.remove('fa-moon-o');
+                themeIcon.classList.add('fa-sun-o');
+                // Update visible label text
+                themeLabel.textContent = 'Light Mode';
+            } else {
+                // Remove dark-mode class from body
+                bodyEl.classList.remove('dark-mode');
+                // Change icon from sun to moon
+                themeIcon.classList.remove('fa-sun-o');
+                themeIcon.classList.add('fa-moon-o');
+                // Update visible label text
+                themeLabel.textContent = 'Dark Mode';
+            }
+            // Save preference to localStorage for persistence
+            localStorage.setItem('theme', mode);
+        }
+
+        // Toggle between light and dark themes
+        function toggleTheme() {
+            // Check current mode
+            const isDark = bodyEl.classList.contains('dark-mode');
+            // Switch to opposite mode
+            setTheme(isDark ? 'light' : 'dark');
+        }
+
+        // Initialize theme from localStorage on page load
+        (function initTheme() {
+            // Get stored theme preference
+            const stored = localStorage.getItem('theme');
+            // Apply stored theme or default to light
+            if (stored === 'dark') {
+                setTheme('dark');
+            } else {
+                setTheme('light');
+            }
+        })();
     </script>
 </body>
 
