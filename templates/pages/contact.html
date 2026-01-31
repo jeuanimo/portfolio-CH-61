@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Me{% endblock %}
+{% load static %}
+
+{% block content %}
+
+<section class="form-section">
+    <div class="form-container">
+        <h1>Contact Me</h1>
+        <p style="margin-bottom: 2rem;">I'd love to hear from you. Please fill out the form below and I'll get back to you as soon as possible.</p>
+        
+        {# Display success/error messages #}
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        {# Contact form #}
+        <form method="post" class="contact-form">
+            {# CSRF token for security #}
+            {% csrf_token %}
+            
+            {# Render form fields with proper styling #}
+            {% for field in form %}
+                {% if field.name != 'honeypot' %}
+                    <div class="form-group">
+                        {% if field.label %}
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {% endif %}
+                        {{ field }}
+                        {% if field.errors %}
+                            <span class="field-error">{{ field.errors }}</span>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            
+            {# Form action buttons #}
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Send Message</button>
+                <button type="reset" class="btn btn-secondary">Clear</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+{% endblock content %}

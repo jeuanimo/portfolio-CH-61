@@ -10,6 +10,10 @@ from django.contrib import messages
 from projects.models import Skill
 # Import SkillForm for adding new skills
 from projects.forms import SkillForm
+from .forms import  ContactForm
+from django.core.mail import send_mail
+# Import settings for email configuration
+from django.conf import settings
 
 # Create your views here.
 
@@ -46,6 +50,7 @@ def  skills_view(request):
     return render(request, 'pages/skills.html', context)
 
 # View for user registration/signup
+# SECURITY: Uses Django's built-in User model and password hashing.
 def register_view(request):
     # Handle POST request for form submission
     if request.method == 'POST':
@@ -76,7 +81,7 @@ def register_view(request):
             # Re-render registration form
             return redirect('register')
         
-        # Create new user account
+        # Create new user account (password is hashed by Django)
         user = User.objects.create_user(username=username, email=email, password=password)
         # Display success message
         messages.success(request, 'Account created successfully! You can now log in.')
@@ -87,6 +92,7 @@ def register_view(request):
     return render(request, 'auth/register.html')
 
 # View for user login
+# SECURITY: Uses Django's authentication backend and session management.
 def login_view(request):
     # Handle POST request for form submission
     if request.method == 'POST':
@@ -94,7 +100,7 @@ def login_view(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         
-        # Authenticate user with provided credentials
+        # Authenticate user with provided credentials (no plaintext password stored)
         user = authenticate(request, username=username, password=password)
         
         # Check if authentication was successful
@@ -114,6 +120,7 @@ def login_view(request):
     return render(request, 'auth/login.html')
 
 # View for user logout
+# SECURITY: Clears the session to prevent session fixation.
 def logout_view(request):
     # Log user out of session
     logout(request)
@@ -128,3 +135,47 @@ def page_not_found(request, exception=None):
     messages.error(request, 'Page not found. You have been redirected to the home page.')
     # Redirect to about me (home) page
     return redirect('about_me')
+# View for contact page
+def contact_view(request):
+    if request.method == 'POST':
+        # Process submitted contact form
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            # Extract cleaned data from form
+            name = form.cleaned_data['name']
+            email = form.cleaned_data['email']
+            message = form.cleaned_data['message']
+        
+            # Build email message body
+            message_body = (
+                f"You have a new email from your Portfolio site.\n\n" 
+                f'Name: {name}\n'
+                f'Email: {email}\n\n'
+                f'Message: {message}'
+            )
+            try:
+                # Send email using configured Gmail account
+                # SECURITY: Sender address is the configured account, not user input.
+                send_mail(
+                    'Email from Portfolio site',  # Subject
+                    message_body,  # Message body
+                    settings.EMAIL_HOST_USER,  # From email (configured email)
+                    ['jeuan.mitchell@gmail.com']  # Recipient list
+                )
+                # Display success message to user
+                messages.success(request, 'Your message has been sent successfully!')
+                # Clear the form after successful submission
+                form = ContactForm()
+                return render(request, 'pages/contact.html', {'form': form})        
+            except Exception as e:
+                # Display error message to user
+                messages.error(request, f'Error sending email: {str(e)}. Please try again.')
+                print(f'Error sending email: {e}')
+                return render(request, 'pages/contact.html', {'form': form})
+        else:
+            # Form is invalid - re-render with errors
+            return render(request, 'pages/contact.html', {'form': form})
+    else:
+        # GET request - render empty contact form
+        form = ContactForm()
+        return render(request, 'pages/contact.html', {'form': form})

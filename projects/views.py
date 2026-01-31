@@ -23,6 +23,7 @@ def projects_list(request):
     return render(request, 'projects/projects_list.html', context)
 
 # View for creating a new project - requires login
+# SECURITY: login_required ensures only authenticated users can create.
 @login_required(login_url='login')
 def add_project(request):
     # Handle POST request for form submission
@@ -43,6 +44,7 @@ def add_project(request):
     return render(request, 'projects/project_form.html', context)
 
 # View for editing an existing project - requires login
+# SECURITY: login_required prevents unauthorized edits.
 @login_required(login_url='login')
 def edit_project(request, project_id):
     # Get project by ID or return 404
@@ -65,11 +67,14 @@ def edit_project(request, project_id):
     return render(request, 'projects/project_form.html', context)
 
 # View for deleting a project - requires login
+# SECURITY: login_required + POST-only delete prevents CSRF and accidental deletes.
 @login_required(login_url='login')
 def delete_project(request, project_id):
     # Get project by ID or return 404
     project = get_object_or_404(Project, id=project_id)
-    # Delete project from database
-    project.delete()
+    # Only allow POST requests for deletion (security: prevents CSRF attacks)
+    if request.method == 'POST':
+        # Delete project from database
+        project.delete()
     # Redirect to projects list after deletion
     return redirect('projects_list')
