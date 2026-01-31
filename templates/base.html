@@ -90,9 +90,9 @@
                     <li class="nav-item {% if request.resolver_match.url_name == 'projects_list' %}active{% endif %}">
                         <a href="{% url 'projects_list' %}" class="nav-link">Projects</a>
                     </li>
-                    {# Contact nav link - placeholder #}
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">Contact</a>
+                    {# Contact nav link #}
+                    <li class="nav-item {% if request.resolver_match.url_name == 'contact' %}active{% endif %}">
+                        <a href="{% url 'contact' %}" class="nav-link">Contact</a>
                     </li>
                     {# Authentication links - conditionally shown based on user status #}
                     {% if user.is_authenticated %}
